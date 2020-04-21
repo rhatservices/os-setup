@@ -1,0 +1,106 @@
+---
+- name: Cleanup Testenvironment
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+
+
+  tasks: 
+
+  - name: Destroy VM
+    azure_rm_virtualmachine:
+      resource_group: "{{azure_resource_group_name}}"
+      name: "{{azure_resource_vm_name}}"
+      state: absent
+    register: create_vm
+
+  - name: DEBUG Destroy VM
+    debug:
+      var: create_vm
+    when: debug|bool == true
+
+  - name: Destroy NIC
+    azure_rm_networkinterface:
+      resource_group: "{{azure_resource_group_name}}"
+      name: tjutestnic001
+      state: absent
+    register: nic
+
+  - name: DEBUG Destroy NIC
+    debug:
+      var: nic
+    when: debug|bool == true
+
+  - name: Destroy Security Group
+    azure_rm_securitygroup:
+      resource_group: "{{azure_resource_group_name}}"
+      name: tjutestsecgroup001
+      state: absent
+    register: secgroup
+  
+  - name: DEBUG Destroy Security Group
+    debug:
+      var: secgroup
+    when: debug|bool == true
+
+  - name: Destroy public ip
+    azure_rm_publicipaddress:
+      resource_group: "{{azure_resource_group_name}}"
+      name: tjutestpubip001
+      state: absent
+    register: pubip
+
+  - name: DEBUG Destroy PublicIP
+    debug:
+      var: pubip
+    when: debug|bool == true
+
+  - name: Remove subnet
+    azure_rm_subnet:
+      resource_group: "{{azure_resource_group_name}}"
+      name: tjutestsubnet001
+      virtual_network: tjutestvnet001
+      state: absent
+    register: subnet
+
+  - name: DEBUG Destroy Subnet
+    debug:
+      var: subnet
+    when: debug|bool == true
+
+  - name: Destroy virtual network
+    azure_rm_virtualnetwork:
+      resource_group: "{{azure_resource_group_name}}"
+      name: tjutestvnet001
+      state: absent
+    register: vnet
+
+  - name: DEBUG Destroy Virtual Network
+    debug:
+      var: vnet
+    when: debug|bool == true
+
+  - name: Destroy storage account
+    azure_rm_storageaccount:
+      resource_group: "{{azure_resource_group_name}}" 
+      name: "{{azure_storage_account}}"
+      state: absent
+    register: storageaccount
+
+  - name: DEBUG Create Storage Account
+    debug:
+      var: storageaccount
+    when: debug|bool == true
+
+  - name: Destroy Resource Group
+    azure_rm_resourcegroup:
+      name: "{{azure_resource_group_name}}"
+      location: "{{azure_location}}" 
+      state: absent
+    register: rg
+
+  - name: DEBUG Destroy Resource Group
+    debug:
+      var: rg
+    when: debug|bool == true

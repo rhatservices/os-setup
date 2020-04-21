@@ -1,0 +1,126 @@
+---
+- name: Configure a new machine on Azure including Resource Group, NIC, Security Group ...
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+
+  tasks: 
+  - name: Create resource group
+    azure_rm_resourcegroup:
+      name: "{{azure_resource_group_name}}"
+      location: "{{azure_location}}" 
+    register: rg
+
+  - name: DEBUG Create Resource Group
+    debug:
+      var: rg
+    when: debug|bool == true
+
+  - name: Create storage account
+    azure_rm_storageaccount:
+      resource_group: "{{azure_resource_group_name}}" 
+      name: "{{azure_storage_account}}"
+      account_type: Standard_LRS
+    register: storageaccount
+
+  - name: DEBUG Create Storage Account
+    debug:
+      var: storageaccount
+    when: debug|bool == true
+
+  - name: Create virtual network
+    azure_rm_virtualnetwork:
+      resource_group: "{{azure_resource_group_name}}"
+      name: tjutestvnet001
+      address_prefixes: "10.10.0.0/16"
+    register: vnet
+
+  - name: DEBUG Create Virtual Network
+    debug:
+      var: vnet
+    when: debug|bool == true
+
+  - name: Add subnet
+    azure_rm_subnet:
+      resource_group: "{{azure_resource_group_name}}"
+      name: tjutestsubnet001
+      address_prefix: "10.10.0.0/24"
+      virtual_network: tjutestvnet001
+    register: subnet
+
+  - name: DEBUG Create Subnet
+    debug:
+      var: subnet
+    when: debug|bool == true
+
+  - name: Create public ip
+    azure_rm_publicipaddress:
+      resource_group: "{{azure_resource_group_name}}"
+      allocation_method: Static
+      name: tjutestpubip001
+    register: pubip
+
+  - name: DEBUG Create PublicIP
+    debug:
+      var: pubip
+    when: debug|bool == true
+
+  - name: Create Security Group that allows SSH
+    azure_rm_securitygroup:
+      resource_group: "{{azure_resource_group_name}}"
+      name: tjutestsecgroup001
+      rules:
+        - name: SSH
+          protocol: Tcp
+          destination_port_range: 22
+          access: Allow
+          priority: 101
+          direction: Inbound
+    register: secgroup
+  
+  - name: DEBUG Create Security Group
+    debug:
+      var: secgroup
+    when: debug|bool == true
+
+  - name: Create NIC
+    azure_rm_networkinterface:
+      resource_group: "{{azure_resource_group_name}}"
+      name: tjutestnic001
+      virtual_network: tjutestvnet001
+      subnet: tjutestsubnet001
+      public_ip_name: tjutestpubip001
+      security_group: tjutestsecgroup001
+    register: nic
+
+  - name: DEBUG Create NIC
+    debug:
+      var: nic
+    when: debug|bool == true
+
+  - name: Create VM
+    azure_rm_virtualmachine:
+      resource_group: "{{azure_resource_group_name}}"
+      name: "{{azure_resource_vm_name}}"
+      vm_size: "{{azure_vm_size}}"
+      storage_account: "{{azure_storage_account}}"
+      storage_container: testvm001
+      storage_blob: testvm001.vhd
+      admin_username: "{{azure_admin_username}}"
+      ssh_password_enabled: false
+      ssh_public_keys: 
+        - path: /home/{{azure_admin_username}}/.ssh/authorized_keys
+          key_data: "{{ ssh_key }}"
+      network_interfaces: tjutestnic001
+      image:
+        offer: CentOS
+        publisher: OpenLogic
+        sku: '7.1'
+        version: latest
+    register: create_vm
+
+  - name: DEBUG Create VM
+    debug:
+      var: create_vm
+    when: debug|bool == true

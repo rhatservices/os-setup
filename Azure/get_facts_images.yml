@@ -1,0 +1,55 @@
+---
+- name: Get facts of images
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+
+  tasks: 
+  - name: Get facts for a specific image
+    azure_rm_virtualmachineimage_info:
+      location: "{{azure_location}}" 
+      publisher: OpenLogic
+      offer: CentOS
+      sku: '7.1'
+      version: '7.1.20160308'
+    register: facts_specific_image
+
+  - name: DEBUG Get facts for a specific image
+    debug:
+      var: facts_specific_image
+    when: debug|bool == true
+
+  - name: List available versions
+    azure_rm_virtualmachineimage_info:
+      location: "{{azure_location}}" 
+      publisher: OpenLogic
+      offer: CentOS
+      sku: '7.1'
+    register: facts_list_versions
+
+  - name: DEBUG List available versions
+    debug:
+      var: facts_list_versions
+    when: debug|bool == true
+
+  - name: List available offers
+    azure_rm_virtualmachineimage_info:
+      location: "{{azure_location}}" 
+      publisher: OpenLogic
+    register: facts_offers
+
+  - name: DEBUG available offers
+    debug:
+      var: facts_offers
+    when: debug|bool == true
+
+  - name: List available publishers
+    azure_rm_virtualmachineimage_info:
+      location: "{{azure_location}}" 
+    register: facts_publishers
+
+  - name: DEBUG List available publishers
+    debug:
+      var: facts_publishers
+    when: debug|bool == true

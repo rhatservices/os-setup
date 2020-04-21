@@ -1,0 +1,6 @@
+---
+- name: Start rollout of new machine
+  hosts: emea,na
+
+  roles: 
+    - role: sap-preconfigure

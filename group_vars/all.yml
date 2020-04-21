@@ -1,4 +1,15 @@
 ---
+debug: true
+
+
+azure_location: 'eastus'
+azure_resource_group_name: 'tju-example-rg'
+azure_storage_account: 'tjuexample00007' # must not contain '-'
+azure_resource_vm_name: 'tju-test-vm'
+azure_vm_size: 'Standard_D2s_v3'
+azure_admin_username: 'tjungbauer'
+ssh_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDCpjgLkditWo8/2SDY5AsQ2Las8Md8m4TbefzBoIM0AD9xRCnhGqMG9rf23D/l4ABj/VNyqoQ0rFYLRI4RGAY+bSLZrYzz0CInzhJ2A/wH5gHeEzM5D3WjiuQ9q6rOfl0zBxZetRW0QU8Lp2+0dOZ+GD74p+oB8XbLj5Q0viWEt6vtZjd0uRWSIkW7E7Bv5OURV2brSw6o9OEjyFK4Dtkt0Hd3lsVQVTKn785wyH5Gnpsdgeh/zbvHax4VVuIclbn5iqC/xH9bA77AMiXip7Jd+52yCDDUK/qkwUmYNKX9j/Q0IqMrigH3arhpJ+iKKq2KG28Y0UP7dJ9fbugCKw4v'
+
 os_packages_add:
   - cronie-anacron
   - rsyslog
@@ -41,3 +52,6 @@ cis_umask_default: "027"
 cis_umask_shell_files:
 - /etc/bashrc
 - /etc/profile
+
+sap_preconfigure_modify_etc_hosts: yes
+sap_domain: 'ispworld.at'
