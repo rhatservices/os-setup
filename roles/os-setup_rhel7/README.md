@@ -1,3 +1,6 @@
+ansible-playbook -i inventory rollout_os_config.yml
+
+
 Quick Notes
 =========
 
