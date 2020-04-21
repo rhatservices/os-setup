@@ -1,0 +1,9 @@
+---
+- name: Start rollout of new machine
+  hosts: emea,na
+
+  roles: 
+    - role: os-setup_rhel7
+      when: 
+        - ansible_facts['distribution'] == "RedHat",
+        - ansible_facts['distribution_major_version'] == "7"

@@ -1,0 +1,39 @@
+---
+# Main tasks file. Here it begins
+#
+# #############################################################
+# Step 1: Remove/install default packages and disable services
+# #############################################################
+- name: Manage packages which shall be installed/removed and services which shall be stopped
+  include_tasks: step1/main.yml
+  tags: step1
+
+# #############################################################
+# Step 2: Configure SSHD using a separate role
+# #############################################################
+- name: configure SSHD Daemon
+  include_role: 
+    name: sshd
+  tags: 
+    - step2
+    - sshd
+
+- name: Basic security - authconfig
+  command: authconfig --passminlen=8 --enablereqother --enablerequpper --enablereqlower --enablereqdigit --update
+  tags: 
+    - step2
+    - authconfig
+
+# #############################################################
+# Step 3: File permissions operations
+# #############################################################
+- name: Configure file permissions
+  include_tasks: step3/main.yml
+  tags: step3
+
+# #############################################################
+# Step 4: Auditd operations
+# #############################################################
+- name: Configre and start Auditd
+  include_tasks: step4/main.yml
+  tags: step4

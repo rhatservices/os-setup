@@ -1,0 +1,202 @@
+---
+# Using package module to install or remove default packages
+
+- name: Remove not required packages
+  package: 
+    name: "{{ os_packages_remove }}"
+    state: absent
+
+- name: Install required packages
+  package: 
+    name: "{{ os_packages_add }}"
+    state: latest
+
+# Disabling some kernel modules using CIS.conf 
+- name: Create /etc/modprobe.d/CIS.conf
+  file: 
+    path: /etc/modprobe.d/CIS.conf 
+    state: touch 
+    owner: root 
+    group: root 
+    mode: 0644
+  changed_when: false
+  tags:
+    - modprobe
+
+##################################################
+# disable some Kernel modules 
+##################################################
+- name: 3.5.1 Ensure DCCP is disabled (Not Scored)
+  lineinfile: 
+    state: present
+    dest: /etc/modprobe.d/CIS.conf
+    line: "install dccp /bin/true"
+  tags:
+    - notscored
+    - modprobe
+
+- name: 3.5.2 Ensure SCTP is disabled (Not Scored)
+  lineinfile:
+    state: present
+    dest: /etc/modprobe.d/CIS.conf
+    line: "install sctp /bin/true"
+  tags:
+    - notscored
+    - modprobe
+
+- name: 3.5.3 Ensure RDS is disabled (Not Scored)
+  lineinfile:
+    state: present
+    dest: /etc/modprobe.d/CIS.conf
+    line: "install rds /bin/true"
+  tags:
+    - notscored
+    - modprobe
+
+- name: 3.5.4 Ensure TIPC is disabled (Not Scored)
+  lineinfile:
+    state: present
+    dest: /etc/modprobe.d/CIS.conf
+    line: "install tipc /bin/true"
+  tags:
+    - notscored
+    - modprobe
+
+##################################################
+# Stop and disable some specific services (inetd)
+# ignore errors when the service is not installed
+##################################################
+- name: 2.1.1 Ensure chargen-dgram services are not enabled (Scored)
+  service:
+    name: auditd
+    state: started
+    enabled: yes
+  tags:
+    - scored
+    - auditd
+
+- name: 2.1.1 Ensure chargen-stream services are not enabled (Scored)
+  service:
+    name: chargen-stream
+    state: stopped
+    enabled: no
+  ignore_errors: yes
+  tags:
+    - scored
+    - inetd
+
+- name: 2.1.2 Ensure daytime-dgram services are not enabled (Scored)
+  service:
+    name: daytime-dgram
+    state: stopped
+    enabled: no
+  ignore_errors: yes
+  tags:
+    - scored
+    - inetd
+
+- name: 2.1.2 Ensure daytime-stream services are not enabled (Scored)
+  service:
+    name: daytime-stream
+    state: stopped
+    enabled: no
+  ignore_errors: yes
+  tags:
+    - scored
+    - inetd
+
+- name: 2.1.4 Ensure echo-stream services are not enabled (Scored)
+  service:
+    name: echo-stream
+    state: stopped
+    enabled: no
+  ignore_errors: yes
+  tags:
+    - scored
+    - inetd
+
+- name: 2.1.4 Ensure echo-dgram services are not enabled (Scored)
+  service:
+    name: echo-dgram
+    state: stopped
+    enabled: no
+  ignore_errors: yes
+  tags:
+    - scored
+    - inetd
+
+- name: Additional service tcpmux-server to disable (Not Scored)
+  service:
+    name: tcpmux-server
+    state: stopped
+    enabled: no
+  ignore_errors: yes
+  tags:
+    - notscored
+    - inetd
+
+##################################################
+# 2.2 Special Purpose Services 
+##################################################
+- name: 2.2.3 Ensure Avahi Server is not enabled (Scored)
+  service:
+    name: avahi-daemon
+    state: stopped
+    enabled: no
+  ignore_errors: yes
+  tags:
+    - scored
+    - special-services
+
+- name: 2.2.4 Ensure CUPS is not enabled (Scored)
+  service:
+    name: cups
+    state: stopped
+    enabled: no
+  ignore_errors: yes
+  tags:
+    - scored
+    - special-services
+
+# using systemd, since it supports masked parameter
+- name: 2.2.7 Ensure NFS and RPC are not enabled (Scored) - partially (only rpc) 
+  systemd:
+    name: rpcbind
+    state: stopped
+    enabled: no
+    masked: yes
+  ignore_errors: yes
+  tags:
+    - scored
+    - special-services
+
+- name: Additional service to disable
+  service:
+    name: rpcidmapd
+    state: stopped
+    enabled: no
+  ignore_errors: yes
+  tags:
+    - notscored
+    - special-services
+
+##################################################
+# 2.2 Special Purpose Services 
+##################################################
+- name: 4.2.1.1 Ensure rsyslog Service is enabled (Scored)
+  service:
+    name: rsyslog
+    state: started
+    enabled: yes
+  tags:
+    - scored
+    - rsyslog
+
+- name: 5.1.1 Ensure cron daemon is enabled (Scored)
+  service:
+    name: crond
+    state: started
+    enabled: yes
+  tags:
+    - scored
+    - crond

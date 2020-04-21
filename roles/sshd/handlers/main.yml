@@ -1,0 +1,10 @@
+---
+# Test and restart SSHD 
+- name: Test and restart SSHD
+  command: sshd -t
+  notify: ["Restart SSHD"]
+
+- name: Restart SSHD
+  service:
+    name: "sshd"
+    state: "restarted"

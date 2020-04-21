@@ -1,0 +1,13 @@
+---
+# Auditd
+
+- name: 4.1.2 Ensure auditd service is enabled (Scored)
+  service:
+    name: auditd
+    state: started
+    enabled: yes
+  tags:
+    - scored
+    - auditd
+
+

@@ -1,0 +1,32 @@
+---
+
+# install SSHD
+- name: Be sure SSHD is installed
+  package: 
+    name: openssh-server
+    state: latest
+
+# start and enable SSHD
+- name: Be sure SSHD is started and enabled
+  service:
+    name: sshd
+    state: started
+    enabled: yes
+
+# create key 
+- name: Ensure Ed25519 host key is present
+  command: ssh-keygen -q -t ed25519 -N "" -f ssh_host_ed25519_key
+  args:
+    chdir: "/etc/ssh"
+    creates: "/etc/ssh/ssh_host_ed25519_key"
+
+# configure SSHD using {{ ansible_distribution_major_version }} to define the corret template
+- name: Generate SSHD config
+  template:
+    src: "etc/ssh/sshd_config_rhel{{ansible_distribution_major_version}}.j2"
+    dest: "/etc/ssh/sshd_config"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: ["Test and restart SSHD"]
+

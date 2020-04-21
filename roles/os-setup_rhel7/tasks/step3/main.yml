@@ -1,0 +1,63 @@
+---
+# ignore media, since on lab my disks are mounted into the VM
+- name: 1.1.21 Ensure sticky bit is set on all world-writable directories (Scored)
+  ignore_errors: true
+  shell: df --local -P | grep -v media | awk '{if (NR!=1) print $6}' | xargs -I '{}' find '{}' -xdev -type d \( -perm -0002 -a ! -perm -1000 \) 2>/dev/null | xargs -I '{}' chmod a+t '{}'
+  tags: 
+    - scored
+    - sticky-bit
+
+
+- name: Loop - Ensure permissions are set, covers 5.1.2, 5.1.3, 5.1.4, 5.1.5, 5.1.6, 5.1.7, 6.1.2, 6.1.3, 6.1.4, 6.1.5
+  file:
+    path: '{{ item.path }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+  loop:
+    - { path: /etc/crontab, owner: root, group: root, mode: og-rwx}
+    - { path: /etc/cron.hourly, owner: root, group: root, mode: og-rwx}
+    - { path: /etc/cron.daily, owner: root, group: root, mode: og-rwx}
+    - { path: /etc/cron.weekly, owner: root, group: root, mode: og-rwx}
+    - { path: /etc/cron.monthly, owner: root, group: root, mode: og-rwx}
+    - { path: /etc/cron.d, owner: root, group: root, mode: og-rwx}
+    - { path: /etc/passwd, owner: root, group: root, mode: '0644'}
+    - { path: /etc/shadow, owner: root, group: root, mode: '0000'}
+    - { path: /etc/group, owner: root, group: root, mode: '0644'}
+    - { path: /etc/gshadow, owner: root, group: root, mode: '0000'}
+  tags: 
+    - scored
+
+# ignoring errors, in case a file does not exist
+- name: Loop - Additonal permission settings
+  file:
+    path: '{{ item.path }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+  ignore_errors: yes
+  loop:
+    - { path: /etc/anacrontab, owner: root, group: root, mode: og-rwx}
+  tags: 
+    - notscored
+
+
+- name: 5.4.2 Ensure system accounts are non-login (Scored)
+  include_tasks: "step3/5.4.2.yml"
+  tags: 
+    - scored
+
+- name: 5.4.3 Ensure default group for the root account is GID 0 (Scored)
+  include_tasks: "step3/5.4.3.yml"
+  tags: 
+    - scored
+
+- name: 5.4.4 Ensure default user umask is 027 or more restrictive (Scored)
+  include_tasks: "step3/5.4.4.yml"
+  tags: 
+    - scored
+
+- name: 5.4.1.1 Ensure password expiration is 365 days or less (Scored)
+  include_tasks: "step3/5.4.1.1.yml"
+  tags: 
+    - scored
