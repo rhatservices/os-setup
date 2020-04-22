@@ -85,6 +85,7 @@
     azure_rm_storageaccount:
       resource_group: "{{azure_resource_group_name}}" 
       name: "{{azure_storage_account}}"
+      force_delete_nonempty: yes
       state: absent
     register: storageaccount
 
