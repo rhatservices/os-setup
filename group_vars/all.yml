@@ -1,7 +1,7 @@
 ---
 debug: true
 
-
+azure_template: 'tjuTemplateExample'
 azure_location: 'eastus'
 azure_resource_group_name: 'tju-example-rg'
 azure_storage_account: 'tjuexample00007' # must not contain '-'

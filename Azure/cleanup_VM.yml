@@ -99,6 +99,7 @@
       name: "{{azure_resource_group_name}}"
       location: "{{azure_location}}" 
       state: absent
+      force_delete_nonempty: yes
     register: rg
 
   - name: DEBUG Destroy Resource Group

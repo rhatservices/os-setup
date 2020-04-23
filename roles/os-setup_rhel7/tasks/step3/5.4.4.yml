@@ -1,5 +1,4 @@
 # Standards: 0.11
-# https://raw.githubusercontent.com/tjungbauer/Ansible-RHEL7-CIS-Benchmarks/master/tasks/level-1/5.4.4.yml
 ---
 
 # 5.4.4 Ensure default user umask is 027 or more restrictive

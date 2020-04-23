@@ -1,5 +1,4 @@
 # Standards: 0.11
-# https://raw.githubusercontent.com/tjungbauer/Ansible-RHEL7-CIS-Benchmarks/master/tasks/level-1/5.4.3.yml
 ---
 
 # 5.4.3 Ensure default group for the root account is GID 0
