@@ -1,0 +1,21 @@
+---
+- name: Get facts of a VM
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+
+  tasks: 
+
+#  - name: Destroy Azure Deploy
+#    azure_rm_deployment:
+#      resource_group: myResourceGroup
+#      name: myDeployment
+#      state: absent
+
+  - name: Create Azure Deploy
+    azure_rm_deployment:
+      resource_group: myResourceGroup
+      name: myDeployment
+      template_link: 'https://raw.githubusercontent.com/tjungbauer/auto/master/test.json'
+      parameters_link: 'https://raw.githubusercontent.com/tjungbauer/auto/master/param.json'

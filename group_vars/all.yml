@@ -14,8 +14,8 @@ os_packages_add:
   - cronie-anacron
   - rsyslog
 
-os_packages_remove: 
-  - httpd 
+os_packages_remove:  
+  - httpd
   - dhcp
   - bind
   - dovecot
