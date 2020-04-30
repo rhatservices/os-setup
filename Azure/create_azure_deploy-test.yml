@@ -30,11 +30,11 @@
         adminPublicKey:
           value: "{{ lookup('file', '/Users/tjungbauer/.ssh/id_rsa.pub') }}"
         operatingSystem:
-          value: CentOS
+          value: RHEL
         operatingSystemPublisher:
-          value: OpenLogic
+          value: RedHat
         operatingSystemSKU:
-          value: '7.1'
+          value: '7.6'
         vmSize:
           value: Standard_D2s_v3
     register: azure
